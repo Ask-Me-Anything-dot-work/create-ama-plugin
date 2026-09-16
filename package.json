@@ -1,0 +1,26 @@
+{
+  "name": "create-ama-plugin",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "create-ama-plugin": "./create.ts"
+  },
+  "scripts": {
+    "create": "bun create.ts",
+    "lint": "eslint . && tsc --noEmit",
+    "test": "bun test tests/scaffold"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.0",
+    "zod": "^3.23.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "latest",
+    "eslint": "^10.4.0",
+    "knip": "^5.10.2",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.59.3"
+  }
+}

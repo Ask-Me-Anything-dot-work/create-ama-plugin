@@ -3,7 +3,7 @@
 ## 1. Purpose
 This file defines the interaction protocol for both AI agents and human contributors to this repository. It is foundational and is always loaded into agent sessions to ensure a consistent set of expectations and workflows.
 
-This is a plugin scaffold for the Orchestrator. It provides a baseline Bun/TS project with CI, release tooling, and architectural conventions — ready for interactive CLI layering (sub-issue 2) and bridge wiring (sub-issue 3).
+This is a plugin scaffold for the Orchestrator. It provides a baseline Bun/TS project with CI, release tooling, and architectural conventions for the {{PLUGIN_ID}} plugin.
 
 ## 2. Tech Stack
 - **Bun**: Runtime, package manager, and test runner.

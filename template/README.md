@@ -1,4 +1,4 @@
-# ama-plugin-stub
+# {{PLUGIN_ID}}
 
 Starter scaffold for Orchestrator plugins. Bun/TS project with Hono, Zod, CI, and semantic-release — ready for plugin-specific wiring.
 

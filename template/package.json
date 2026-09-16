@@ -1,5 +1,5 @@
 {
-  "name": "ama-plugin-stub",
+  "name": "{{PLUGIN_ID}}",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
