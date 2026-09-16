@@ -110,4 +110,19 @@ describe('interpolation', () => {
       expect(files.includes(f)).toBe(true);
     }
   });
+
+  test('generated project has plugin-contract dependency', async () => {
+    const out = join(tmpDir, 'deps');
+    await generate(makeConfig(), out, TEMPLATE_DIR);
+    const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
+    expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.0');
+  });
+
+  test('generated project has plugin test file', async () => {
+    const out = join(tmpDir, 'test');
+    await generate(makeConfig(), out, TEMPLATE_DIR);
+    const files = await listFiles(out);
+    expect(files.some((f) => f.includes('tests/plugin.test.ts'))).toBe(true);
+    expect(files.some((f) => f.includes('tests/health.test.ts'))).toBe(false);
+  });
 });
