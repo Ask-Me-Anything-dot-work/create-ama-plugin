@@ -40,7 +40,7 @@ describe('plugin wiring', () => {
   test('generated package.json has @ama-work/plugin-contract dep', async () => {
     await generate(makeConfig(), join(tmpDir, 'output'), TEMPLATE_DIR);
     const pkg = JSON.parse(await readFile(join(tmpDir, 'output/package.json'), 'utf-8'));
-    expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.0');
+    expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.1');
     expect(pkg.dependencies.hono).toBeUndefined();
   });
 

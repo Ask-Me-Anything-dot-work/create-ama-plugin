@@ -15,10 +15,9 @@
     "publish:verdaccio": "npm publish --registry http://verdaccio.homelab"
   },
   "dependencies": {
-    "@ama-work/plugin-contract": "^1.0.0"
+    "@ama-work/plugin-contract": "^1.0.1"
   },
   "devDependencies": {
-    "@hono/node-server": "^2.1.1",
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
     "@commitlint/types": "^21.2.0",
