@@ -115,7 +115,7 @@ describe('interpolation', () => {
     const out = join(tmpDir, 'deps');
     await generate(makeConfig(), out, TEMPLATE_DIR);
     const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
-    expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.0');
+    expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.1');
   });
 
   test('generated project has plugin test file', async () => {
