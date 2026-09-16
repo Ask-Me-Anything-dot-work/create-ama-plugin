@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "gateway": {
+      "type": "remote",
+      "url": "http://host.docker.internal:3105/mcp/profiles/create-ama-plugin?MOUNTED_WORKSPACE_PATH=/home/thomas/workspace/agent/create-ama-plugin",
+      "enabled": true
+    }
+  }
+}

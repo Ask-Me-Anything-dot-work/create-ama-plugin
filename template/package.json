@@ -10,12 +10,12 @@
     "test": "bun test",
     "release": "semantic-release",
     "prepublishOnly": "bun run build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "publish:npm": "npm publish --registry https://registry.npmjs.org",
+    "publish:verdaccio": "npm publish --registry http://verdaccio.homelab"
   },
   "dependencies": {
-    "hono": "^4.2.7",
-    "zod": "^3.23.4",
-    "@hono/zod-validator": "^0.2.1"
+    "@ama-work/plugin-contract": "^1.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.0",
@@ -39,8 +39,9 @@
     "typescript-eslint": "^8.59.3"
   },
   "publishConfig": {
-    "registry": "http://verdaccio.homelab"
+    "registry": "https://registry.npmjs.org"
   },
+  "provenance": null,
   "files": [
     "dist",
     "README.md"
