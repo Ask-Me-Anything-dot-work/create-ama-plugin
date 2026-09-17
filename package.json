@@ -1,5 +1,5 @@
 {
-  "name": "create-ama-plugin",
+  "name": "@ama-work/create-ama-plugin",
   "version": "0.0.0",
   "type": "module",
   "bin": {
@@ -8,18 +8,34 @@
   "scripts": {
     "create": "bun create.ts",
     "lint": "eslint . && tsc --noEmit",
-    "test": "bun test tests/scaffold"
+    "test": "bun test tests/scaffold",
+    "release": "semantic-release",
+    "prepare": "husky"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
     "zod": "^3.23.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@commitlint/types": "^19.4.0",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.0",
     "@types/bun": "latest",
+    "conventional-changelog-conventionalcommits": "^8.0.0",
     "eslint": "^10.4.0",
+    "husky": "^9.1.0",
     "knip": "^5.10.2",
+    "semantic-release": "^24.0.0",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.59.3"
   }
