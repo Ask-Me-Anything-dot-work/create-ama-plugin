@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach, afterEach } from 'bun:test';
-import { rm, mkdir } from 'node:fs/promises';
+import { rm, mkdir, readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { generate } from '../../src/scaffold/generator';
@@ -26,6 +26,11 @@ async function isPackageAvailable(): Promise<boolean> {
   }
 }
 
+function spawnOk(cmd: string[], cwd: string): void {
+  const result = Bun.spawnSync(cmd, { cwd, stdio: ['inherit', 'pipe', 'pipe'] });
+  expect(result.exitCode).toBe(0);
+}
+
 describe('self-test gate', () => {
   let tmpDir: string;
 
@@ -39,25 +44,32 @@ describe('self-test gate', () => {
   });
 
   test('generated project passes bun install and bun test', async () => {
-    const packageAvailable = await isPackageAvailable();
-    if (!packageAvailable) {
+    if (!(await isPackageAvailable())) {
       console.log('Skipping self-test: @ama-work/plugin-contract not published to npm');
       return;
     }
 
     const out = join(tmpDir, 'generated');
     await generate(makeConfig(), out, TEMPLATE_DIR);
+    spawnOk(['bun', 'install'], out);
+    spawnOk(['bun', 'test'], out);
+  }, 30000);
 
-    const installResult = Bun.spawnSync(['bun', 'install'], {
-      cwd: out,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
-    expect(installResult.exitCode).toBe(0);
+  test('generated project builds dist/index.js and main points to it', async () => {
+    if (!(await isPackageAvailable())) {
+      console.log('Skipping build self-test: @ama-work/plugin-contract not published to npm');
+      return;
+    }
 
-    const testResult = Bun.spawnSync(['bun', 'test'], {
-      cwd: out,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
-    expect(testResult.exitCode).toBe(0);
+    const out = join(tmpDir, 'build-test');
+    await generate(makeConfig(), out, TEMPLATE_DIR);
+    spawnOk(['bun', 'install'], out);
+    spawnOk(['bun', 'run', 'build'], out);
+
+    const fileStat = await stat(join(out, 'dist/index.js'));
+    expect(fileStat.isFile()).toBe(true);
+
+    const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
+    expect(pkg.main).toBe('dist/index.js');
   }, 30000);
 });

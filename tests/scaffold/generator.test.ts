@@ -158,4 +158,16 @@ describe('generate', () => {
     await generate(makeConfig({ migrations: false }), join(tmpDir, 'output'), TEMPLATE_DIR);
     expect(await dirExists(join(tmpDir, 'output/migrations'))).toBe(false);
   });
+
+  test('generated package.json declares main entrypoint as dist/index.js', async () => {
+    await generate(makeConfig(), join(tmpDir, 'output'), TEMPLATE_DIR);
+    const pkg = JSON.parse(await readFile(join(tmpDir, 'output/package.json'), 'utf-8'));
+    expect(pkg.main).toBe('dist/index.js');
+  });
+
+  test('generated package.json includes dist in files array', async () => {
+    await generate(makeConfig(), join(tmpDir, 'output'), TEMPLATE_DIR);
+    const pkg = JSON.parse(await readFile(join(tmpDir, 'output/package.json'), 'utf-8'));
+    expect(pkg.files).toContain('dist');
+  });
 });
