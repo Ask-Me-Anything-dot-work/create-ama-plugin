@@ -88,18 +88,39 @@ describe('interpolation', () => {
     await rm(tmpDir, { recursive: true, force: true });
   });
 
-  test('package.json name matches plugin ID', async () => {
+  test('package.json name matches scoped plugin ID', async () => {
     const out = join(tmpDir, 'pkg');
     await generate(makeConfig({ pluginId: 'my-cool-plugin' }), out, TEMPLATE_DIR);
     const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
-    expect(pkg.name).toBe('my-cool-plugin');
+    expect(pkg.name).toBe('@ama-work/my-cool-plugin');
   });
 
-  test('README title matches plugin ID', async () => {
+  test('package.json has public scoped access in publishConfig', async () => {
+    const out = join(tmpDir, 'access');
+    await generate(makeConfig(), out, TEMPLATE_DIR);
+    const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
+    expect(pkg.publishConfig.access).toBe('public');
+    expect(pkg.publishConfig.registry).toBe('https://registry.npmjs.org');
+  });
+
+  test('README title matches scoped plugin ID', async () => {
     const out = join(tmpDir, 'readme');
-    await generate(makeConfig({ pluginId: 'another-plugin' }), out, TEMPLATE_DIR);
+    await generate(makeConfig({ pluginId: 'my-plugin' }), out, TEMPLATE_DIR);
     const readme = await readFile(join(out, 'README.md'), 'utf-8');
-    expect(readme).toContain('# another-plugin');
+    expect(readme).toContain('# @ama-work/my-plugin');
+  });
+});
+
+describe('generated project structure', () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = join(tmpdir(), `cli-struct-${Date.now()}`);
+    await mkdir(tmpDir, { recursive: true });
+  });
+
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
   });
 
   test('base template files always present', async () => {
@@ -124,5 +145,15 @@ describe('interpolation', () => {
     const files = await listFiles(out);
     expect(files.some((f) => f.includes('tests/plugin.test.ts'))).toBe(true);
     expect(files.some((f) => f.includes('tests/health.test.ts'))).toBe(false);
+  });
+
+  test('generated project can be packed', async () => {
+    const out = join(tmpDir, 'pack');
+    await generate(makeConfig({ pluginId: 'pack-test' }), out, TEMPLATE_DIR);
+    const result = Bun.spawnSync(['npm', 'pack', '--dry-run'], {
+      cwd: out,
+      stdio: ['inherit', 'pipe', 'pipe'],
+    });
+    expect(result.exitCode).toBe(0);
   });
 });

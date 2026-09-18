@@ -125,16 +125,16 @@ describe('generate', () => {
     await rm(tmpDir, { recursive: true, force: true });
   });
 
-  test('generates base scaffold with correct package.json name', async () => {
+  test('generates base scaffold with correct scoped package name', async () => {
     await generate(makeConfig(), join(tmpDir, 'output'), TEMPLATE_DIR);
     const pkg = JSON.parse(await readFile(join(tmpDir, 'output/package.json'), 'utf-8'));
-    expect(pkg.name).toBe('test-plugin');
+    expect(pkg.name).toBe('@ama-work/test-plugin');
   });
 
-  test('README title matches plugin ID', async () => {
+  test('README title matches scoped plugin ID', async () => {
     await generate(makeConfig(), join(tmpDir, 'output'), TEMPLATE_DIR);
     const readme = await readFile(join(tmpDir, 'output/README.md'), 'utf-8');
-    expect(readme).toContain('# test-plugin');
+    expect(readme).toContain('# @ama-work/test-plugin');
   });
 
   test('includes console panel when enabled', async () => {

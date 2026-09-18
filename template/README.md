@@ -1,4 +1,4 @@
-# {{PLUGIN_ID}}
+# @ama-work/{{PLUGIN_ID}}
 
 Starter scaffold for Orchestrator plugins. Bun/TS project with Hono, Zod, CI, and semantic-release — ready for plugin-specific wiring.
 
@@ -19,6 +19,16 @@ bun run dev
 | `bun test` | Run tests |
 | `bun run release` | Publish via semantic-release |
 
+## Publishing
+
+```bash
+# Publish to public npm registry
+npm publish --registry https://registry.npmjs.org
+
+# Publish to private Verdaccio registry
+npm publish --registry http://verdaccio.homelab
+```
+
 ## Project Structure
 
 ```
@@ -37,4 +47,4 @@ tests/
 ## CI/CD
 
 - **CI**: GitHub Actions runs lint, typecheck, and tests on push/PR to `main`.
-- **Release**: semantic-release on `main` push. Publishes to Verdaccio.
+- **Release**: semantic-release on `main` push. Publishes to npmjs.org with public scoped access.

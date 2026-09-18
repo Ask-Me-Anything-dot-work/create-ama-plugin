@@ -1,5 +1,5 @@
 {
-  "name": "{{PLUGIN_ID}}",
+  "name": "@ama-work/{{PLUGIN_ID}}",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -39,7 +39,8 @@
     "typescript-eslint": "^8.59.3"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "provenance": null,
   "files": [
