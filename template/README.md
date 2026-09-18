@@ -29,6 +29,12 @@ npm publish --registry https://registry.npmjs.org
 npm publish --registry http://verdaccio.homelab
 ```
 
+## Plugin Entrypoint
+
+The orchestrator plugin host loads this package via the `main` field in `package.json`, which points to `dist/index.js`. This file is produced by `bun run build` (TypeScript compilation). The entrypoint exports an `OrchestratorPlugin` object as the default export.
+
+**Do not change the `main` field** unless the orchestrator host contract is updated.
+
 ## Project Structure
 
 ```

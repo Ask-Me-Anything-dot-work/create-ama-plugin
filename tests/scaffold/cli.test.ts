@@ -109,6 +109,13 @@ describe('interpolation', () => {
     const readme = await readFile(join(out, 'README.md'), 'utf-8');
     expect(readme).toContain('# @ama-work/my-plugin');
   });
+
+  test('generated package.json has main entrypoint', async () => {
+    const out = join(tmpDir, 'entrypoint');
+    await generate(makeConfig(), out, TEMPLATE_DIR);
+    const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
+    expect(pkg.main).toBe('dist/index.js');
+  });
 });
 
 describe('generated project structure', () => {
