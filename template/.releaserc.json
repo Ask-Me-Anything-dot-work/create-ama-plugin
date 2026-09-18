@@ -11,7 +11,8 @@
     }],
     ["@semantic-release/npm", {
       "npmPublish": true,
-      "pkgRoot": "."
+      "pkgRoot": ".",
+      "access": "public"
     }],
     ["@semantic-release/git", {
       "assets": ["package.json", "bun.lock"],
