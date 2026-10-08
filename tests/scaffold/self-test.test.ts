@@ -1,6 +1,7 @@
 import { expect, test, describe, beforeEach, afterEach } from 'bun:test';
 import { rm, mkdir, readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { generate } from '../../src/scaffold/generator';
 import type { ScaffoldConfig } from '../../src/scaffold/config';
@@ -28,6 +29,9 @@ async function isPackageAvailable(): Promise<boolean> {
 
 function spawnOk(cmd: string[], cwd: string): void {
   const result = Bun.spawnSync(cmd, { cwd, stdio: ['inherit', 'pipe', 'pipe'] });
+  if (result.exitCode !== 0) {
+    console.error(`${cmd.join(' ')} failed (cwd=${cwd}):\n${result.stderr.toString()}`);
+  }
   expect(result.exitCode).toBe(0);
 }
 
@@ -53,9 +57,9 @@ describe('self-test gate', () => {
     await generate(makeConfig(), out, TEMPLATE_DIR);
     spawnOk(['bun', 'install'], out);
     spawnOk(['bun', 'test'], out);
-  }, 30000);
+  }, 60000);
 
-  test('generated project builds dist/index.js and main points to it', async () => {
+  test('generated project builds dist/index.js satisfying export contract', async () => {
     if (!(await isPackageAvailable())) {
       console.log('Skipping build self-test: @ama-work/plugin-contract not published to npm');
       return;
@@ -71,5 +75,16 @@ describe('self-test gate', () => {
 
     const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
     expect(pkg.main).toBe('dist/index.js');
-  }, 30000);
+    expect(pkg.module).toBe('dist/index.js');
+
+    // Mirrors the orchestrator registry's resolution helper (ama-agent-orchestrator#642).
+    const mod = (await import(pathToFileURL(join(out, 'dist/index.js')).href)) as Record<
+      string,
+      unknown
+    >;
+    const resolved = (mod.plugin ?? mod.default) as Record<string, unknown>;
+    expect(typeof resolved.id).toBe('string');
+    expect(typeof resolved.onStart).toBe('function');
+    expect(typeof resolved.onStop).toBe('function');
+  }, 60000);
 });

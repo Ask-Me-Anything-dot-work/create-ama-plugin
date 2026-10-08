@@ -31,23 +31,35 @@ npm publish --registry http://verdaccio.homelab
 
 ## Plugin Entrypoint
 
-The orchestrator plugin host loads this package via the `main` field in `package.json`, which points to `dist/index.js`. This file is produced by `bun run build` (TypeScript compilation). The entrypoint exports an `OrchestratorPlugin` object as the default export.
+The orchestrator plugin host loads this package via the `module` field in `package.json` (falling back to `main`), both pointing at `dist/index.js`. This file is produced by `bun run build` (TypeScript compilation).
 
-**Do not change the `main` field** unless the orchestrator host contract is updated.
+### Named-export rule
+
+The loader contract (mirrors `resolvePlugin` in `ama-agent-orchestrator`):
+
+- The entrypoint **must export a named `plugin`** object implementing `OrchestratorPlugin` (`id`, `onStart`, `onStop`).
+- The default re-export (`export default plugin`) is **optional** — a module namespace exposing only `default` is rejected by the runtime loader (`'id' in mod` is always false on a module namespace).
+- `tests/contract.test.ts` asserts this shape against the module and fails loudly if the contract drifts.
+
+**Do not change the `main`/`module` fields** unless the orchestrator host contract is updated.
+
+### Console panel (when scaffolded with `--console-panel`)
+
+Panel assets are embedded as TypeScript strings (`src/panels/template.ts`, `src/panels/mixin.ts`) and served by a Hono router mounted in `onStart` via `bridge.mountRoutes(...)`. The orchestrator mounts plugin routes under `/plugins/@ama-work/{{PLUGIN_ID}}/`, so `templateUrl` and `mixinUrl` use absolute paths under that prefix (e.g. `/plugins/@ama-work/{{PLUGIN_ID}}/template.html`).
 
 ## Project Structure
 
 ```
 src/
-├── index.ts          # Hono app entry point
+├── index.ts          # Plugin entry point (named `plugin` export)
 ├── config/env.ts     # Zod-validated env config
 ├── lib/validation/   # Shared Zod schemas
 ├── routes/           # HTTP route handlers
 ├── services/         # Business logic
 └── repositories/     # Data access layer
 tests/
-├── health.test.ts
-└── validation.test.ts
+├── plugin.test.ts      # Plugin behavior tests
+└── contract.test.ts    # Orchestrator export-contract smoke test
 ```
 
 ## CI/CD

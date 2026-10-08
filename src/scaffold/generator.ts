@@ -77,6 +77,18 @@ export function getExtraFiles(config: ScaffoldConfig): Map<string, string> {
   return extra;
 }
 
+// Panel routes need a direct hono dep (transitive via @ama-work/plugin-contract
+// today, but the plugin instantiates Hono itself). Injected only for panel
+// scaffolds to keep the base template lean.
+export function applyPanelDependencies(files: Map<string, string>): void {
+  const pkgContent = files.get('package.json');
+  if (pkgContent === undefined) return;
+
+  const pkg = JSON.parse(pkgContent) as { dependencies?: Record<string, string> };
+  pkg.dependencies = { ...pkg.dependencies, hono: '^4.8.0' };
+  files.set('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
+}
+
 export async function generate(
   config: ScaffoldConfig,
   targetDir: string,
@@ -94,6 +106,10 @@ export async function generate(
   const extraFiles = getExtraFiles(config);
   for (const [path, content] of extraFiles) {
     allFiles.set(path, interpolateTemplate(content, config));
+  }
+
+  if (config.consolePanel) {
+    applyPanelDependencies(allFiles);
   }
 
   for (const [path, content] of allFiles) {

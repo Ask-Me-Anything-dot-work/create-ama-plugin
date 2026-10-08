@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
@@ -11,7 +12,7 @@
     "test": "bun test",
     "release": "semantic-release",
     "prepublishOnly": "bun run build",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "publish:npm": "npm publish --registry https://registry.npmjs.org",
     "publish:verdaccio": "npm publish --registry http://verdaccio.homelab"
   },

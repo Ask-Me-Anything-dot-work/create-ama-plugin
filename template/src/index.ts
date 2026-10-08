@@ -10,4 +10,7 @@ const plugin: OrchestratorPlugin = {
   },
 };
 
+// Named export is the orchestrator loader contract (ama-agent-orchestrator#642).
+export { plugin };
+// Default re-export is optional, kept for backward compatibility only.
 export default plugin;

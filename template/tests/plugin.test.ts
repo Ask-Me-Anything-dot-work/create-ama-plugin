@@ -1,14 +1,23 @@
-import { expect, test, describe } from 'bun:test';
+import { expect, test, describe, beforeEach, afterEach } from 'bun:test';
 import { MockBridge } from '@ama-work/plugin-contract';
-import plugin from '../src/index';
+import { plugin } from '../src/index';
 
 describe('Plugin', () => {
+  let bridge: MockBridge;
+
+  beforeEach(() => {
+    bridge = new MockBridge();
+  });
+
+  afterEach(() => {
+    bridge.stop();
+  });
+
   test('has correct id', () => {
     expect(plugin.id).toBe('{{PLUGIN_ID}}');
   });
 
   test('onStart logs startup message', async () => {
-    const bridge = new MockBridge();
     const logs: string[] = [];
     bridge.logger.info = (msg: string) => logs.push(msg);
 
