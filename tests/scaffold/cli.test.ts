@@ -1,35 +1,17 @@
 import { expect, test, describe, beforeEach, afterEach } from 'bun:test';
-import { readdir, rm, readFile, mkdir } from 'node:fs/promises';
+import { rm, readFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { generate } from '../../src/scaffold/generator';
-import type { ScaffoldConfig } from '../../src/scaffold/config';
-
-const TEMPLATE_DIR = join(import.meta.dir, '../../template');
-
-function makeConfig(overrides: Partial<ScaffoldConfig> = {}): ScaffoldConfig {
-  return {
-    pluginId: 'test-plugin',
-    provides: 'generic',
-    consolePanel: false,
-    migrations: false,
-    ...overrides,
-  };
-}
-
-async function listFiles(dir: string): Promise<string[]> {
-  const result: string[] = [];
-  const stack = [dir];
-  while (stack.length > 0) {
-    const current = stack.pop()!;
-    for (const entry of await readdir(current, { withFileTypes: true })) {
-      const full = join(current, entry.name);
-      if (entry.isDirectory()) stack.push(full);
-      else result.push(full.replace(dir + '/', ''));
-    }
-  }
-  return result.sort();
-}
+import {
+  HOOK_TIMEOUT_MS,
+  PACK_SPAWN_TIMEOUT_MS,
+  PACK_TEST_TIMEOUT_MS,
+  TEMPLATE_DIR,
+  listFiles,
+  makeConfig,
+  spawnOk,
+} from './helpers';
 
 describe('conditional combos', () => {
   let tmpDir: string;
@@ -37,11 +19,11 @@ describe('conditional combos', () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `cli-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   test('console=yes, migrations=yes', async () => {
     const out = join(tmpDir, 'both');
@@ -82,11 +64,11 @@ describe('interpolation', () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `cli-int-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   test('package.json name matches scoped plugin ID', async () => {
     const out = join(tmpDir, 'pkg');
@@ -124,11 +106,11 @@ describe('generated project structure', () => {
   beforeEach(async () => {
     tmpDir = join(tmpdir(), `cli-struct-${Date.now()}`);
     await mkdir(tmpDir, { recursive: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   test('base template files always present', async () => {
     const out = join(tmpDir, 'base');
@@ -154,13 +136,13 @@ describe('generated project structure', () => {
     expect(files.some((f) => f.includes('tests/health.test.ts'))).toBe(false);
   });
 
-  test('generated project can be packed', async () => {
-    const out = join(tmpDir, 'pack');
-    await generate(makeConfig({ pluginId: 'pack-test' }), out, TEMPLATE_DIR);
-    const result = Bun.spawnSync(['npm', 'pack', '--dry-run'], {
-      cwd: out,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
-    expect(result.exitCode).toBe(0);
-  });
+  test(
+    'generated project can be packed',
+    async () => {
+      const out = join(tmpDir, 'pack');
+      await generate(makeConfig({ pluginId: 'pack-test' }), out, TEMPLATE_DIR);
+      spawnOk(['npm', 'pack', '--dry-run'], out, PACK_SPAWN_TIMEOUT_MS);
+    },
+    PACK_TEST_TIMEOUT_MS,
+  );
 });
