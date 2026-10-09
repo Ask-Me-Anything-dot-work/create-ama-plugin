@@ -3,23 +3,17 @@ import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { generate } from '../../src/scaffold/generator';
-import type { ScaffoldConfig } from '../../src/scaffold/config';
-
-const TEMPLATE_DIR = join(import.meta.dir, '../../template');
-
-function makeConfig(overrides: Partial<ScaffoldConfig> = {}): ScaffoldConfig {
-  return {
-    pluginId: 'test-plugin',
-    provides: 'generic',
-    consolePanel: false,
-    migrations: false,
-    ...overrides,
-  };
-}
+import {
+  HOOK_TIMEOUT_MS,
+  PREPARE_SPAWN_TIMEOUT_MS,
+  TEMPLATE_DIR,
+  makeConfig,
+} from './helpers';
 
 function runPrepare(prepare: string, path: string): number {
   return Bun.spawnSync(['/bin/sh', '-c', prepare], {
     env: { PATH: path },
+    timeout: PREPARE_SPAWN_TIMEOUT_MS,
     stdio: ['ignore', 'pipe', 'pipe'],
   }).exitCode;
 }
@@ -34,11 +28,11 @@ describe('template prepare script', () => {
     await generate(makeConfig(), out, TEMPLATE_DIR);
     const pkg = JSON.parse(await readFile(join(out, 'package.json'), 'utf-8'));
     prepare = pkg.scripts.prepare;
-  });
+  }, HOOK_TIMEOUT_MS);
 
   afterEach(async () => {
     await rm(tmpDir, { recursive: true, force: true });
-  });
+  }, HOOK_TIMEOUT_MS);
 
   test('prepare does not blanket-swallow failures', () => {
     expect(prepare).not.toContain('|| true');
