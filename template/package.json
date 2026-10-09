@@ -12,7 +12,7 @@
     "test": "bun test",
     "release": "semantic-release",
     "prepublishOnly": "bun run build",
-    "prepare": "husky || true",
+    "prepare": "husky || [ $? -eq 127 ]",
     "publish:npm": "npm publish --registry https://registry.npmjs.org",
     "publish:verdaccio": "npm publish --registry http://verdaccio.homelab"
   },
