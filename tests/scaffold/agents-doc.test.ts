@@ -52,6 +52,12 @@ describe('AGENTS.md doc currency', () => {
     expect(agents).toContain('/plugins/@ama-work/test-plugin/');
   });
 
+  test('mentions migrations/ for the --migrations variant', async () => {
+    const agents = await readAgentsMd();
+    expect(agents).toContain('`migrations/`');
+    expect(agents).toContain('`--migrations`');
+  });
+
   test('interpolates the plugin id', async () => {
     const agents = await readAgentsMd();
     expect(agents).toContain('test-plugin');
