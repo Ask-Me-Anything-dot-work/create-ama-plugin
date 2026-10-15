@@ -15,20 +15,12 @@ export const consolePanel: ConsolePanel = {
   [
     'src/panels/template.ts',
     `// Panel HTML embedded as a string: tsc does not copy .html files into dist/.
-export const templateHtml = \`<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{PLUGIN_ID}}</title>
-  </head>
-  <body>
-    <div id="{{PLUGIN_ID}}-root">
-      <h1>{{PLUGIN_ID}}</h1>
-      <p>Console panel scaffold — replace this markup with your plugin UI.</p>
-    </div>
-  </body>
-</html>
+// Contract: fragment only — no <!doctype>, <html>, <head>, <body>, or <style>.
+// The console injects this via innerHTML; full documents break the shell layout.
+export const templateHtml = \`<div id="{{PLUGIN_ID}}-root" style="padding: 1rem;">
+  <h1>{{PLUGIN_ID}}</h1>
+  <p>Console panel scaffold — replace this markup with your plugin UI.</p>
+</div>
 \`;
 `,
   ],

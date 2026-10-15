@@ -19,7 +19,7 @@ This is a plugin scaffold for the Orchestrator. It provides a baseline Bun/TS pr
 ## 3. Project Structure
 The repository follows a clean, predictable layout:
 - `src/index.ts`: Plugin entrypoint exporting a named `plugin` object implementing `OrchestratorPlugin` (`id`, `onStart`, `onStop`). `export default plugin` is an optional, backward-compatibility-only re-export.
-- `src/panels/`: Console panel modules (`console.ts`, `template.ts`, `mixin.ts`, `routes.ts`, `index.ts`) — present **only** when scaffolded with `--console-panel`. Assets are embedded TypeScript strings served by a Hono router mounted in `onStart`; panel asset URLs live under the `/plugins/@ama-work/{{PLUGIN_ID}}/` prefix.
+- `src/panels/`: Console panel modules (`console.ts`, `template.ts`, `mixin.ts`, `routes.ts`, `index.ts`) — present **only** when scaffolded with `--console-panel`. Assets are embedded TypeScript strings served by a Hono router mounted in `onStart`; panel asset URLs live under the `/plugins/@ama-work/{{PLUGIN_ID}}/` prefix. `templateHtml` must be an HTML **fragment** — no `<!doctype>`, `<html>`, `<head>`, `<body>`, or `<style>` elements; the orchestrator console injects panels via `innerHTML` and full documents leak global styles that break the console layout. Use inline styles on the fragment root or console-compatible utility classes.
 - `src/config/env.ts`: Zod-validated environment configuration.
 - `migrations/`: Migrations scaffold (`README.md`, `.gitkeep`) — present **only** when scaffolded with `--migrations`.
 - `tests/`: Project tests using `bun:test`. `tests/contract.test.ts` guards the orchestrator export contract.

@@ -64,6 +64,18 @@ describe('console panel scaffold', () => {
       expect(pkg.dependencies['@ama-work/plugin-contract']).toBe('^1.0.1');
     }, { consolePanel: true }));
 
+  test('panel templateHtml is an HTML fragment (no forbidden constructs)', () =>
+    withGenerated(async (out) => {
+      const template = await readOutput(out, 'src/panels/template.ts');
+      const html = template.match(/export const templateHtml = `([^`]*)`/)?.[1] ?? '';
+      expect(html).not.toContain('<!doctype');
+      expect(html).not.toContain('<html');
+      expect(html).not.toContain('<head');
+      expect(html).not.toContain('<body');
+      expect(html).not.toContain('<style');
+      expect(html).toContain('<div');
+    }, { consolePanel: true }));
+
   test('panel entrypoint mounts console panel and asset routes', () =>
     withGenerated(async (out) => {
       const index = await readOutput(out, 'src/index.ts');

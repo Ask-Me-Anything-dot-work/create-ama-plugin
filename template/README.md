@@ -47,6 +47,8 @@ The loader contract (mirrors `resolvePlugin` in `ama-agent-orchestrator`):
 
 Panel assets are embedded as TypeScript strings (`src/panels/template.ts`, `src/panels/mixin.ts`) and served by a Hono router mounted in `onStart` via `bridge.mountRoutes(...)`. The orchestrator mounts plugin routes under `/plugins/@ama-work/{{PLUGIN_ID}}/`, so `templateUrl` and `mixinUrl` use absolute paths under that prefix (e.g. `/plugins/@ama-work/{{PLUGIN_ID}}/template.html`).
 
+**Panel template contract:** `templateHtml` must be an HTML **fragment** — no `<!doctype>`, `<html>`, `<head>`, `<body>`, or `<style>` elements. The orchestrator console injects panels via `innerHTML`; full documents leak global styles and break the console layout. Use inline styles on the fragment root or console-compatible utility classes.
+
 ### Migrations (when scaffolded with `--migrations`)
 
 Emits `migrations/README.md` and `migrations/.gitkeep` — nothing more. The scaffold reserves the directory; wiring migration tooling is up to you.
